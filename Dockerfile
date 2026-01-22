@@ -1,7 +1,8 @@
-FROM node:18-slim
+FROM node:18-bullseye-slim
 
-# Instalar dependencias del sistema para Playwright
-RUN apt-get update && apt-get install -y \
+# 1. Instalar dependencias del sistema PARA PLAYWRIGHT
+RUN apt-get update && \
+    apt-get install -y \
     wget \
     gnupg \
     ca-certificates \
@@ -22,23 +23,27 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     libu2f-udev \
     libvulkan1 \
+    libxkbcommon0 \
+    libxshmfence1 \
     && rm -rf /var/lib/apt/lists/*
 
+# 2. Directorio de trabajo
 WORKDIR /app
 
-# Copiar package.json primero para caché de dependencias
+# 3. Copiar package.json
 COPY package*.json ./
 
-# Instalar dependencias de Node
-RUN npm ci --only=production
+# 4. Instalar dependencias de Node INCLUYENDO PLAYWRIGHT
+RUN npm ci
 
-# Instalar Playwright y sus browsers
-RUN npx playwright install-deps chromium
-RUN npx playwright install chromium
+# 5. Instalar Chrome para Playwright (IMPORTANTE)
+RUN npx playwright install chromium --with-deps
 
-# Copiar el resto de la aplicación
+# 6. Copiar el resto del código
 COPY . .
 
+# 7. Exponer puerto
 EXPOSE 3000
 
+# 8. Comando de inicio
 CMD ["node", "server.js"]
