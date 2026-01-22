@@ -1,0 +1,12 @@
+{
+  "name": "turnstile-bypass-simple",
+  "version": "1.0.0",
+  "description": "Bypass simple de Cloudflare Turnstile",
+  "main": "bypass.js",
+  "scripts": {
+    "start": "node bypass.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}
